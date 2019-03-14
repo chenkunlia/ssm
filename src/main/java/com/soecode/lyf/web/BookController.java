@@ -18,6 +18,7 @@ import com.soecode.lyf.dto.AppointExecution;
 import com.soecode.lyf.dto.Result;
 import com.soecode.lyf.entity.Book;
 import com.soecode.lyf.enums.AppointStateEnum;
+import com.soecode.lyf.enums.ResultType;
 import com.soecode.lyf.exception.NoNumberException;
 import com.soecode.lyf.exception.RepeatAppointException;
 import com.soecode.lyf.service.BookService;
@@ -32,24 +33,29 @@ public class BookController {
 	private BookService bookService;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	private String list(Model model) {
+	@ResponseBody
+	private Result list(Model model) {
 		List<Book> list = bookService.getList();
 		model.addAttribute("list", list);
+		Result result=new Result();
+		result.setData(list);
+		result.setSuccess(ResultType.SUCCESS);
 		// list.jsp + model = ModelAndView
-		return "list";// WEB-INF/jsp/"list".jsp
+		return result;// WEB-INF/jsp/"list".jsp
 	}
 
 	@RequestMapping(value = "/{bookId}/detail", method = RequestMethod.GET)
-	private String detail(@PathVariable("bookId") Long bookId, Model model) {
+	@ResponseBody
+	private Book detail(@PathVariable("bookId") Long bookId, Model model) {
 		if (bookId == null) {
-			return "redirect:/book/list";
+			return null;
 		}
 		Book book = bookService.getById(bookId);
 		if (book == null) {
-			return "forward:/book/list";
+			return null;
 		}
 		model.addAttribute("book", book);
-		return "detail";
+		return book;
 	}
 
 	// ajax json
@@ -58,7 +64,7 @@ public class BookController {
 	@ResponseBody
 	private Result<AppointExecution> appoint(@PathVariable("bookId") Long bookId, @RequestParam("studentId") Long studentId) {
 		if (studentId == null || studentId.equals("")) {
-			return new Result<>(false, "学号不能为空");
+			return new Result<>(ResultType.ERROR, "学号不能为空");
 		}
 		AppointExecution execution = null;
 		try {
@@ -70,7 +76,7 @@ public class BookController {
 		} catch (Exception e) {
 			execution = new AppointExecution(bookId, AppointStateEnum.INNER_ERROR);
 		}
-		return new Result<AppointExecution>(true, execution);
+		return new Result<AppointExecution>(ResultType.SUCCESS, execution);
 	}
 
 }

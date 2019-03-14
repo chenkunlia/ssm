@@ -1,11 +1,13 @@
 package com.soecode.lyf.dto;
 
+import com.soecode.lyf.enums.ResultType;
+
 /**
  * 封装json对象，所有返回结果都使用它
  */
 public class Result<T> {
 
-	private boolean success;// 是否成功标志
+	private ResultType success;// 是否成功标志
 
 	private T data;// 成功时返回的数据
 
@@ -15,22 +17,22 @@ public class Result<T> {
 	}
 
 	// 成功时的构造器
-	public Result(boolean success, T data) {
+	public Result(ResultType success, T data) {
 		this.success = success;
 		this.data = data;
 	}
 
 	// 错误时的构造器
-	public Result(boolean success, String error) {
+	public Result(ResultType success, String error) {
 		this.success = success;
 		this.error = error;
 	}
 
-	public boolean isSuccess() {
+	public ResultType isSuccess() {
 		return success;
 	}
 
-	public void setSuccess(boolean success) {
+	public void setSuccess(ResultType success) {
 		this.success = success;
 	}
 
